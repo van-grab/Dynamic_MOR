@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Order Flow Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hidden-view { display: none !important; }
+        .btn-grayish { background-color: #EEF9F9; color: #184440; }
+        .btn-grayish .check-icon { color: #184440; }
+        .btn-vibrant-green { background-color: #16a34a; color: white; }
+        .btn-vibrant-green .check-icon { color: white; }
+        .btn-view-order { background-color: #EEF9F9; color: #184440; }
+    </style>
+</head>
+<body class="bg-gray-200 flex items-center justify-center min-h-screen py-8">
+
+    <div id="app-container" class="w-full max-w-sm mx-auto bg-white shadow-lg rounded-3xl overflow-hidden" style="height: 844px;">
+        
+        <!-- ORDERS LIST VIEW -->
+        <div id="orders-list-view" class="h-full flex flex-col">
+            <div class="p-4">
+                <header class="flex items-center justify-between mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                    <h1 class="text-xl font-bold">Orders</h1>
+                    <div class="flex items-center space-x-2">
+                        <div class="flex items-center space-x-2 border border-gray-300 rounded-full px-3 py-1">
+                            <span class="h-2 w-2 bg-green-500 rounded-full"></span>
+                            <span class="text-sm font-medium">Normal</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg>
+                    </div>
+                </header>
+                <nav class="flex items-center border-b border-gray-200">
+                    <a href="#" class="px-4 py-2 text-green-600 border-b-2 border-green-600 font-semibold">Preparing (3)</a>
+                    <a href="#" class="px-4 py-2 text-gray-500 font-medium">Ready</a>
+                    <a href="#" class="px-4 py-2 text-gray-500 font-medium">Upcoming</a>
+                </nav>
+            </div>
+            <div class="flex-grow p-4 pt-0 overflow-y-auto">
+                <div id="order-list-container" class="space-y-3">
+                    <!-- Order cards will be dynamically inserted here -->
+                </div>
+                 <div class="mt-6 text-center">
+                    <button id="restart-button-list" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full">
+                        Restart Demo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ORDER DETAILS VIEW -->
+        <div id="order-details-view" class="hidden-view h-full flex flex-col">
+             <header class="p-4 flex items-center justify-between border-b border-gray-200">
+                <button id="back-to-list-button"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+                <h1 id="details-order-id" class="text-xl font-bold"></h1>
+                <div class="flex items-center space-x-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                </div>
+            </header>
+            <div class="flex-grow p-4 overflow-y-auto">
+                <p class="text-gray-700 mb-4">Items for order <span id="details-order-id-body"></span></p>
+            </div>
+            <footer class="bg-white shadow-lg p-4 border-t border-gray-200">
+                <div id="details-footer-content" class="flex items-center justify-between">
+                    <!-- Footer content will be dynamic -->
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        const ordersListView = document.getElementById('orders-list-view');
+        const orderDetailsView = document.getElementById('order-details-view');
+        const backToListButton = document.getElementById('back-to-list-button');
+        const restartButton = document.getElementById('restart-button-list');
+        const orderListContainer = document.getElementById('order-list-container');
+        
+        let orders = [];
+        let updateInterval;
+        let currentDetailOrderId = null;
+
+        const initialOrders = [
+            { id: 'GF-NEW-1', totalSeconds: 30, items: 2, state: 'new' },
+            { id: 'GF-NEW-2', totalSeconds: 60, items: 1, state: 'new' },
+            { id: 'GF-PREP-3', totalSeconds: 45, items: 4, state: 'preparing' },
+        ];
+
+        function createOrderCard(order) {
+            const newBadge = order.state === 'new' ? '<span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-md">NEW</span>' : '';
+            
+            let buttonHtml;
+            if (order.state === 'new') {
+                // For new orders, the button is just a visual indicator. The whole card is the tap target.
+                buttonHtml = `<div class="btn-view-order font-bold py-2 px-5 rounded-full" style="pointer-events: none;">View Order</div>`;
+            } else {
+                buttonHtml = `
+                    <div class="progressive-button flex items-center justify-center space-x-2 font-bold py-2 px-5 rounded-full transition-all duration-500" style="pointer-events: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                        <span>Ready</span>
+                    </div>`;
+            }
+
+            return `
+                <div id="${order.id}" class="order-card bg-white border rounded-lg p-4 flex items-center justify-between shadow-sm cursor-pointer" data-order-id="${order.id}">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2">
+                            <p class="font-bold text-gray-800">${order.id}</p>
+                            ${newBadge}
+                        </div>
+                        <p class="text-gray-600">Be ready in <span class="timer-display font-semibold"></span></p>
+                        <p class="text-sm text-gray-500">${order.items} items</p>
+                    </div>
+                    <div class="button-container">${buttonHtml}</div>
+                </div>
+            `;
+        }
+        
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        function updateUI() {
+            orders.forEach(order => {
+                if (order.remainingSeconds > 0) {
+                    order.remainingSeconds--;
+                }
+
+                const card = document.getElementById(order.id);
+                if (card) {
+                    card.querySelector('.timer-display').textContent = formatTime(order.remainingSeconds);
+                    if (order.state === 'preparing') {
+                        const button = card.querySelector('.progressive-button');
+                        const isGray = order.remainingSeconds > order.totalSeconds / 2;
+                        button.classList.toggle('btn-grayish', isGray);
+                        button.classList.toggle('btn-vibrant-green', !isGray);
+                    }
+                }
+            });
+            if (currentDetailOrderId) updateDetailsView();
+        }
+
+        function updateDetailsView() {
+            const order = orders.find(o => o.id === currentDetailOrderId);
+            if (!order) return;
+
+            const footerContent = document.getElementById('details-footer-content');
+            
+            // The footer will always show the "Ready" button logic now, as the state is changed on click.
+            footerContent.innerHTML = `
+                <div>
+                    <p class="text-gray-600 text-sm">Get it ready in</p>
+                    <p id="details-timer" class="text-3xl font-bold text-gray-900">${formatTime(order.remainingSeconds)}</p>
+                </div>
+                <button id="details-progressive-button" class="progressive-button flex items-center justify-center space-x-2 font-bold py-3 px-8 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                    <span>Ready</span>
+                </button>`;
+            const button = footerContent.querySelector('.progressive-button');
+            const isGray = order.remainingSeconds > order.totalSeconds / 2;
+            button.classList.toggle('btn-grayish', isGray);
+            button.classList.toggle('btn-vibrant-green', !isGray);
+        }
+
+        function changeOrderState(orderId, newState) {
+            const order = orders.find(o => o.id === orderId);
+            if (order && order.state !== newState) {
+                order.state = newState;
+                // Re-render the specific card that changed
+                const oldCard = document.getElementById(orderId);
+                if (oldCard) {
+                    const newCardHTML = createOrderCard(order);
+                    oldCard.outerHTML = newCardHTML;
+                    // Re-attach the main listener to the new card
+                    const newCard = document.getElementById(orderId);
+                    attachCardListener(newCard);
+                }
+            }
+        }
+
+        function attachCardListener(card) {
+            const orderId = card.dataset.orderId;
+            const order = orders.find(o => o.id === orderId);
+
+            card.addEventListener('click', () => {
+                if (order.state === 'new') {
+                    // If it's a new order, change its state first
+                    changeOrderState(order.id, 'preparing');
+                }
+                // Then, show the details page
+                showOrderDetails(order.id);
+            });
+        }
+
+        function startDemo() {
+            clearInterval(updateInterval);
+            orderListContainer.innerHTML = '';
+            orders = JSON.parse(JSON.stringify(initialOrders)).map(o => ({...o, remainingSeconds: o.totalSeconds}));
+            
+            orders.forEach(order => orderListContainer.innerHTML += createOrderCard(order));
+            
+            document.querySelectorAll('.order-card').forEach(card => {
+                attachCardListener(card);
+            });
+
+            updateInterval = setInterval(updateUI, 1000);
+        }
+
+        function showOrderDetails(orderId) {
+            currentDetailOrderId = orderId;
+            document.getElementById('details-order-id').textContent = orderId;
+            document.getElementById('details-order-id-body').textContent = orderId;
+            ordersListView.classList.add('hidden-view');
+            orderDetailsView.classList.remove('hidden-view');
+            updateDetailsView();
+        }
+
+        function showOrdersList() {
+            currentDetailOrderId = null;
+            orderDetailsView.classList.add('hidden-view');
+            ordersListView.classList.remove('hidden-view');
+        }
+
+        backToListButton.addEventListener('click', showOrdersList);
+        restartButton.addEventListener('click', startDemo);
+        window.onload = startDemo;
+    </script>
+</body>
+</html>
+
+
